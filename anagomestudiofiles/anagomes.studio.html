@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!-- saved from url=(0087)file:///C:/Users/titic/OneDrive/Documentos/estudos/html-css/exercicios/ex006/index.html -->
+<html lang="pt-br"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Ana Gomes</title>
+<link href="./anagomes.studio_files/css2" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+background:linear-gradient(135deg,#ff9ecf,#ffc3e6);
+color:#333;
+}
+
+header{
+background:white;
+padding:20px;
+text-align:center;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+header h1{
+color:#e84393;
+}
+
+.contact{
+margin-top:10px;
+font-weight:600;
+color:#25D366;
+}
+
+.container{
+max-width:900px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
+
+h2{
+margin-bottom:20px;
+color:#e84393;
+}
+
+form{
+display:grid;
+gap:15px;
+}
+
+input, select, button{
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:14px;
+}
+
+button{
+background:#e84393;
+color:white;
+border:none;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#d6307a;
+}
+
+footer{
+text-align:center;
+padding:20px;
+color:white;
+margin-top:40px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Studio Ana Gomes</h1>
+<p>Agende seu horário online 💅</p>
+
+</header>
+
+<div class="container">
+
+<h2>Agende Seu Horário</h2>
+
+<form id="appointmentForm">
+<input type="text" id="nome" placeholder="Seu Nome" required="">
+<input type="tel" id="telefone" placeholder="WhatsApp" required="">
+
+<select id="servico" required="">
+<option value="">Escolha o Serviço</option>
+<option>Manicure (Mão) - R$20,00</option>
+<option>Pedicure (Pé) - R$30,00</option>
+<option>Manicure + Pedicure (Mão e Pé) - R$40,00</option>
+</select>
+
+<input type="date" id="data" required="">
+<select id="hora" required="">
+<option value="">Escolha o Horário</option>
+</select>
+
+<button type="submit">Confirmar Agendamento</button>
+<div class="contact">
+WhatsApp: +55 32 99854-0652
+</div>
+</form>
+
+</div>
+
+<footer>
+© 2026 Studio Ana Gomes
+</footer>
+<img src="./anagomes.studio_files/gomesstudio.-150.jpg" alt="Feito com amor">
+<img src="./anagomes.studio_files/pedicuregms-200.jpg" alt="Feito com Carinho">
+<img src="./anagomes.studio_files/studiogomes.150.jpg" alt="Detalhes">
+<script>
+
+const horaSelect = document.getElementById("hora");
+const dataInput = document.getElementById("data");
+
+const horarioInicio = 7;
+const horarioFim = 20;
+
+function gerarHorarios() {
+    horaSelect.innerHTML = '<option value="">Escolha o Horário</option>';
+
+    let dataSelecionada = dataInput.value;
+    if(!dataSelecionada) return;
+
+    let agendamentos = JSON.parse(localStorage.getItem("agendamentos")) || [];
+
+    for(let h = horarioInicio; h < horarioFim; h++) {
+        let horaFormatada = (h < 10 ? "0" + h : h) + ":00";
+        let ocupado = agendamentos.some(a => a.data === dataSelecionada && a.hora === horaFormatada);
+
+        let option = document.createElement("option");
+        option.value = horaFormatada;
+        option.textContent = ocupado ? horaFormatada + " (Indisponível)" : horaFormatada;
+        option.disabled = ocupado;
+
+        horaSelect.appendChild(option);
+    }
+}
+
+dataInput.addEventListener("change", gerarHorarios);
+
+document.getElementById("appointmentForm").addEventListener("submit", function(e){
+e.preventDefault();
+
+let nome = document.getElementById("nome").value;
+let telefone = document.getElementById("telefone").value;
+let servico = document.getElementById("servico").value;
+let data = document.getElementById("data").value;
+let hora = document.getElementById("hora").value;
+
+let hoje = new Date().toISOString().split("T")[0];
+if(data < hoje){
+    alert("Não é possível agendar datas passadas.");
+    return;
+}
+
+let agendamentos = JSON.parse(localStorage.getItem("agendamentos")) || [];
+
+agendamentos.push({data, hora});
+localStorage.setItem("agendamentos", JSON.stringify(agendamentos));
+
+let mensagem = `Olá! Novo agendamento:
+Nome: ${nome}
+Telefone: ${telefone}
+Serviço: ${servico}
+Data: ${data}
+Hora: ${hora}`;
+
+let numero = "5532998540652";
+let url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+
+window.open(url, "_blank");
+
+alert("Agendamento confirmado com sucesso!");
+
+this.reset();
+horaSelect.innerHTML = '<option value="">Escolha o Horário</option>';
+});
+
+</script>
+
+
+</body></html>
